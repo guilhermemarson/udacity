@@ -1,10 +1,11 @@
+﻿
 # Machine Learning Engineer Nanodegree
 ## Capstone Project
 Guilherme Augusto Kater Marson  
 September 26st, 2018
 
 ## I. Definition
-This project will define a model to better evaluate the sell price of houses in Ames, Iowa. The data can be found here. It’s important to mention that this dataset is part of a Kaggle competition, so it will be simple to compare the model performance to other model’s performance.  
+This project will define a model to better evaluate the sell price of houses in Ames, Iowa. The data can be found [here](https://www.kaggle.com/c/house-prices-advanced-regression-techniques/data). It’s important to mention that this dataset is part of a Kaggle competition, so it will be simple to compare the model performance to other model’s performance.  
 
 ### Project Overview
 There are three values for any home on the market: What the seller thinks it’s worth, what the buyer thinks it’s worth and what a professional appraiser will think it’s worth. The seller wants as much money as possible for his house. The buyer wants to pay as low as possible and the professional appraiser will gather some data from the house, together with his background experience to come with a price. 
@@ -17,8 +18,8 @@ With this in mind and assuming that there is a database with explanatory variabl
 The model will try to regress the explanatory variables to the fairest price possible, removing from the equation the integrity and knowledge of the professional appraiser. 
 
 ### Metrics
-The  or root-mean-square error (RMSE)  is a frequently used measure of the differences between values (sample or population values) predicted by a model or an estimator and the values observed. The RMSE represents the square root of the second sample moment of the differences between predicted values and observed values or the quadratic mean of these differences. 
-RMSE is a measure of accuracy, to compare forecasting errors of different models for a particular dataset and not between datasets, as it is scale-dependent.[1]
+The root-mean-square error (RMSE)  is a frequently used measure of the differences between values (sample or population values) predicted by a model or an estimator and the values observed. The RMSE represents the square root of the second sample moment of the differences between predicted values and observed values or the quadratic mean of these differences. 
+RMSE is a measure of accuracy, to compare forecasting errors of different models for a particular dataset and not between datasets, as it is scale-dependent.
 RMSE is always non-negative, and a value of 0 (almost never achieved in practice) would indicate a perfect fit to the data. In general, a lower RMSE is better than a higher one. However, comparisons across different types of data would be invalid because the measure is dependent on the scale of the numbers used.
 RMSE is the square root of the average of squared errors. The effect of each error on RMSE is proportional to the size of the squared error; thus larger errors have a disproportionately large effect on RMSE. Consequently, RMSE is sensitive to outliers. 
 The logarithm will be applied to both observed and predicted sales price so that the error predicting expensive and cheap houses will affect the result equally. 
@@ -27,6 +28,29 @@ The logarithm will be applied to both observed and predicted sales price so that
 _(approx. 2-4 pages)_
 
 ### Data Exploration
+There are 2 datasets available to solve this problem. The first one is the train dataset and the second is the test dataset. The mais difference of them is that the test dataset does not have the target variables (SalePrice) because it's defined to be used as a submission to Kaggle website to evaluate the model. 
+#### Train Dataset
+ - Rows: 1460
+ - Columns: 81
+ - Data Types: 38 numerical columns and 43 textual columns 
+ #### Test Dataset
+  - Rows: 1459
+ - Columns: 80
+ - Data Types: 37 numerical columns and 43 textual columns 
+#### Data  Sample
+The dataset has more than 80 columns, so instead of showing all columns in this document, we will present only the first 10. 
+![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/data_sample.JPG)
+
+For a more detailed description on the variables, there is a file named variable_description.xlsx that holds the following information about each variable:
+
+ - Name: the name of the variable
+ - Type: numerical or categorical (textual)
+ - Convert to Categorical: If it´s a good idea to convert the numerical to a categorical variable
+ - Description: detailed description about the variable
+ - Expectation: my personal expectation about the variable. It will be used to guide the data exploration priorization
+
+
+
 In this section, you will be expected to analyze the data you are using for the problem. This data can either be in the form of a dataset (or datasets), input data (or input files), or even an environment. The type of data should be thoroughly described and, if possible, have basic statistics and information presented (such as discussion of input features or defining characteristics about the input or environment). Any abnormalities or interesting qualities about the data that may need to be addressed have been identified (such as features that need to be transformed or the possibility of outliers). Questions to ask yourself when writing this section:
 - _If a dataset is present for this problem, have you thoroughly discussed certain features about the dataset? Has a data sample been provided to the reader?_
 - _If a dataset is present for this problem, are statistics about the dataset calculated and reported? Have any relevant results from this calculation been discussed?_
@@ -34,6 +58,97 @@ In this section, you will be expected to analyze the data you are using for the 
 - _Are there any abnormalities or characteristics about the input space or dataset that need to be addressed? (categorical variables, missing values, outliers, etc.)_
 
 ### Exploratory Visualization
+#### Target Analysis
+The target is a continuous variable, so the first step is to analyze its distribution:
+![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/skewed_target_distribution.png)
+As we can see, the distribution is right skewed. To illustrate a bit more, we will also analyze the Probability plot:
+![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/skewed_target_probability_plot.png)
+Usually predictive models work better on normally distributed targets. A log transformation on right skewed targets tends to be sufficient to normalyze it. Although we have already validated that there is no SalePrice that is 0 or negative, as a good practice we will use the ln(x+1) transformation.
+Below we can see the target´s distribution and probability plots after the log transformation: 
+![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/normalized_target.png)
+As we can see above, after the transformation the target is almost normal, so we will keep the log transformation on target and continue analysing the rest of the variables.
+#### Numerical Variable Analysis
+The first analysis on numerical variables is the Correlation Matrix, which brings the correlation between all numerical variables. We are going to use only the train dataset here because we want to take a closer look at how the variables correlates with the target (SalePrice)
+![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/correlation_matrix.png)
+Although we have some interesting correlations that needs to be investigated deeper, we will firstly focus on the variables that are highly correlated with SalesPrice.
+* OverallQual
+* TotalBsmtSF
+* GrLivArea
+* GarageCars
+![Correlation plot of variables that are highly correlated with the target](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/target_highly_correlated.png)
+Let's take a look at the scatter plots to have a better idea of the correlations between the variables and the target:
+![Scatter plots](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/scatter_plots.png)
+**OverallQual:** This numerical variable will be transformed to an ordered categorical variable. But  it´s interesting to note that it has an almost linear correlation with the price
+**TotalBsmtSF** This variable has a positive relationship with price. There is an interesting outlier that is a building with a very big basement, but I will keep it
+**GrLivArea** and **GarageCars** are very correlated with the price as well with no outlier to be removed
+
+From the above, only OverallQual and GarageCars are in my list of High Importance vars on "variable_description.xlsx" file. It´s important to mention that I ranked the variables in the spreadsheet prior to analysing the data, so it's only a personal feeling on the variable importance.
+The next step is to analyze variables that are highly correlated with itselves, not necessarily with the target. To avoid multicolinearity, the most correlated with the target will be kept and the other one will be dropped:
+ - GarageArea Vs GarageCars
+	 - GarageArea dropped
+ - YearBuilt Vs GarageYrBlt
+	 - GarageYrBlt dropped
+ - GrLivArea Vs TotRmsAbvGrd
+	 - TotRmsAbvGrd dropped
+ - 1stFlrSF Vs TotalBsmtSF
+	 - 1stFlrSF dropped
+
+Before advancing to categorical variables, let´s take a look at nulls
+#### Null Variable Analysis
+The null analysis is a very important step on data analysis. In this part we will find out if we have some variables with such a high amount of nulls that they can´t even be used. In this step we will also define the rules for null imputation for all the variables. 
+Although the act of using test data to analyze data and create null imputation rules can be considered data leakage, it's a common practice in Kaggle competitions in order to achieve better results. In real world modelling it would not be used, but for this specific case we are going to use.
+ The graph below shows bars with the number of no null observations per variable. Each bar represents the number of not null observartion for each variable (higher bars are better). We will present only the variables that have at least 1 null observation:
+ ![Nulls per variable](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/nulls%20per%20variable.png)
+According to the data_description file, some nulls makes sense, so to avoid mistakes,  we will analyze them one by one, reading the variable's description file together with the null percentage.
+* Alley : NA means No Alley access
+* BsmtQual : NA means No basement
+* BsmtCond : NA means No basement
+* BsmtExposure: NA means No basement
+* BsmtFinType1: NA means No basement
+* BsmtFinType2 : NA means No basement
+* BsmtExposure : NA means No basement
+* BsmtFinType1 : NA means No basement
+* BsmtFinType2 : NA means No basement
+* FireplaceQu : NA means No fireplace
+* GarageType : NA means No garage
+* GarageFinish : NA means No garage
+* GarageQual : NA means No garage
+* GarageCond : NA means No garage
+* PoolQC : NA means No pool
+* Fence : NA means No fence
+* MiscFeature : NA means None
+* MasVnrType: NA means None
+* Electrical: Mode fill
+* KitchenQual: Mode fill
+* MSZoning,SaleType: Mode fill 
+* Exterior1st: Mode fill 
+* Exterior2nd: Mode fill
+* GarageYrBlt: Replacing missing data with 0 (Since No garage = no cars in such garage.)
+* GarageArea and: Replacing missing data with 0 (Since No garage = no cars in such garage.) 
+* GarageCars : Replacing missing data with 0 (Since No garage = no cars in such garage.)
+* MasVnrArea: NA means 0
+* BsmtFinSF1: NA means 0
+* BsmtFinSF2: NA means 0
+* BsmtUnfSF: NA means 0
+* TotalBsmtSF: NA means 0
+* BsmtFullBath: NA means 0
+* BsmtHalfBath: NA means 0
+* Functional : NA means typical
+* LotFrontage : Group by neighborhood and fill in missing value by the median LotFrontage of all the neighborhood
+* LGarageYrBlt :  All garages that do not have a Year Built, does not exist (has 0 size in cars), so we will fill nulls with 0
+#### Categorical Variables Analysis
+The objective of the catagorical variable analysis is to identify variables that can explain the target. Also, it´s very important to identify if the data is not concentrated on only one category or if the categorical has only one category. 
+Since the number of categorical variables is too high and all of the analysis is in the data_exploration.ypnb file, we will cover only the most important findings in this section
+
+![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/Alley.png)
+![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/CentralAir.png)
+![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/HEatingQC.png)
+![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/KitchenQual.png)
+![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/MSZoning.png)
+![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/Neighborhood.png)
+![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/Utilities.png)
+
+
 In this section, you will need to provide some form of visualization that summarizes or extracts a relevant characteristic or feature about the data. The visualization should adequately support the data being used. Discuss why this visualization was chosen and how it is relevant. Questions to ask yourself when writing this section:
 - _Have you visualized a relevant characteristic or feature about the dataset or input data?_
 - _Is the visualization thoroughly analyzed and discussed?_
