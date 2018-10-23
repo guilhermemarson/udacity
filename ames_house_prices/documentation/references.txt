@@ -1,0 +1,4 @@
+https://en.wikipedia.org/wiki/Cross-validation_(statistics)
+https://en.wikipedia.org/wiki/Random_forest
+http://blog.citizennet.com/blog/2012/11/10/random-forests-ensembles-and-performance-metrics
+https://medium.com/@williamkoehrsen/random-forest-simple-explanation-377895a60d2d
