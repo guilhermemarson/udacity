@@ -25,7 +25,6 @@ RMSE is the square root of the average of squared errors. The effect of each err
 The logarithm will be applied to both observed and predicted sales price so that the error predicting expensive and cheap houses will affect the result equally. 
 
 ## II. Analysis
-_(approx. 2-4 pages)_
 
 ### Data Exploration
 There are 2 datasets available to solve this problem. The first one is the train dataset and the second is the test dataset. The mais difference of them is that the test dataset does not have the target variables (SalePrice) because it's defined to be used as a submission to Kaggle website to evaluate the model. 
@@ -48,14 +47,6 @@ For a more detailed description on the variables, there is a file named variable
  - Convert to Categorical: If it´s a good idea to convert the numerical to a categorical variable
  - Description: detailed description about the variable
  - Expectation: my personal expectation about the variable. It will be used to guide the data exploration priorization
-
-
-
-In this section, you will be expected to analyze the data you are using for the problem. This data can either be in the form of a dataset (or datasets), input data (or input files), or even an environment. The type of data should be thoroughly described and, if possible, have basic statistics and information presented (such as discussion of input features or defining characteristics about the input or environment). Any abnormalities or interesting qualities about the data that may need to be addressed have been identified (such as features that need to be transformed or the possibility of outliers). Questions to ask yourself when writing this section:
-- _If a dataset is present for this problem, have you thoroughly discussed certain features about the dataset? Has a data sample been provided to the reader?_
-- _If a dataset is present for this problem, are statistics about the dataset calculated and reported? Have any relevant results from this calculation been discussed?_
-- _If a dataset is **not** present for this problem, has discussion been made about the input space or input data for your problem?_
-- _Are there any abnormalities or characteristics about the input space or dataset that need to be addressed? (categorical variables, missing values, outliers, etc.)_
 
 ### Exploratory Visualization
 #### Target Analysis
@@ -99,43 +90,8 @@ The null analysis is a very important step on data analysis. In this part we wil
 Although the act of using test data to analyze data and create null imputation rules can be considered data leakage, it's a common practice in Kaggle competitions in order to achieve better results. In real world modelling it would not be used, but for this specific case we are going to use.
  The graph below shows bars with the number of no null observations per variable. Each bar represents the number of not null observartion for each variable (higher bars are better). We will present only the variables that have at least 1 null observation:
  ![Nulls per variable](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/nulls%20per%20variable.png)
-According to the data_description file, some nulls makes sense, so to avoid mistakes,  we will analyze them one by one, reading the variable's description file together with the null percentage.
-* Alley : NA means No Alley access
-* BsmtQual : NA means No basement
-* BsmtCond : NA means No basement
-* BsmtExposure: NA means No basement
-* BsmtFinType1: NA means No basement
-* BsmtFinType2 : NA means No basement
-* BsmtExposure : NA means No basement
-* BsmtFinType1 : NA means No basement
-* BsmtFinType2 : NA means No basement
-* FireplaceQu : NA means No fireplace
-* GarageType : NA means No garage
-* GarageFinish : NA means No garage
-* GarageQual : NA means No garage
-* GarageCond : NA means No garage
-* PoolQC : NA means No pool
-* Fence : NA means No fence
-* MiscFeature : NA means None
-* MasVnrType: NA means None
-* Electrical: Mode fill
-* KitchenQual: Mode fill
-* MSZoning,SaleType: Mode fill 
-* Exterior1st: Mode fill 
-* Exterior2nd: Mode fill
-* GarageYrBlt: Replacing missing data with 0 (Since No garage = no cars in such garage.)
-* GarageArea and: Replacing missing data with 0 (Since No garage = no cars in such garage.) 
-* GarageCars : Replacing missing data with 0 (Since No garage = no cars in such garage.)
-* MasVnrArea: NA means 0
-* BsmtFinSF1: NA means 0
-* BsmtFinSF2: NA means 0
-* BsmtUnfSF: NA means 0
-* TotalBsmtSF: NA means 0
-* BsmtFullBath: NA means 0
-* BsmtHalfBath: NA means 0
-* Functional : NA means typical
-* LotFrontage : Group by neighborhood and fill in missing value by the median LotFrontage of all the neighborhood
-* LGarageYrBlt :  All garages that do not have a Year Built, does not exist (has 0 size in cars), so we will fill nulls with 0
+As we can see there is much work to be done on null imputation but the rules will be covered later on Data Preprocessing section. 
+
 #### Categorical Variables Analysis
 The objective of the catagorical variable analysis is to identify variables that can explain the target. Also, it´s very important to identify if the data is not concentrated on only one category or if the categorical has only one category. 
 Since the number of categorical variables is too high and all of the analysis is in the data_exploration.ypnb file, we will cover only the some findings about the categorical variables in this section:
@@ -182,17 +138,80 @@ One more important technique that will be used is the **RandomizedSearchCV**
 RandomizedSearchCV is a hyperparameter tunning technique that tries a fixed number of hyperparameter settings sampled from specified probability distributions. In contrast to GridSearchCV, not all parameter values are tried out, so it´s not so computationally expensive.
 
 ### Benchmark
-The random forest model will be  evaluated against a Gradient Boosting Model and later against a TPOT generated model. All models will be evaluated using root mean squared error. 
-To garantee that the models are generalizing, the results will be obtained submitting the scored test dataset to Kaggle and comparing the RMSE of each dataset
+The random forest model will be  evaluated using Root Mean Squared Error against a Gradient Boosting Model and  against a TPOT generated model. All models will be evaluated using root mean squared error applied to the test database using Kaggle submission platform.
+
 
 ## III. Methodology
 _(approx. 3-5 pages)_
 
 ### Data Preprocessing
-In this section, all of your preprocessing steps will need to be clearly documented, if any were necessary. From the previous section, any of the abnormalities or characteristics that you identified about the dataset will be addressed and corrected here. Questions to ask yourself when writing this section:
-- _If the algorithms chosen require preprocessing steps like feature selection or feature transformations, have they been properly documented?_
-- _Based on the **Data Exploration** section, if there were abnormalities or characteristics that needed to be addressed, have they been properly corrected?_
-- _If no preprocessing is needed, has it been made clear why?_
+##### Scale Transformation
+The first step on data preprocessing was to perform a log transformation (ln(x+1)) on the target to make its distribution closer to a normal distribution.
+##### Numerical to Categorical Transformation
+Next, some variables were converted from numerical to categorical: 
+
+ - "MSSubClass" that is the type of dwelling involved in the sale, so it does not make sense to be numerical
+ - "OverallQual" that rates the overall material and finish of the house was converted to a ordered categorical variable. The order does not influence on the model, but helps to understand the categories.
+ - "OverallCond" that rates the overall condition of the house was converted to a ordered categorical variable. The order does not influence on the model, but helps to understand the categories.
+ - "MoSold" that is the month sold was also converted to an ordered categorical variable
+##### Null Inputation
+According to the data_description file, some nulls makes sense, so the variables that had at least 1 null row were analyzed and the rule chosen for null imputation is described below:
+* Alley : NA means No Alley access
+* BsmtQual : NA means No basement
+* BsmtCond : NA means No basement
+* BsmtExposure: NA means No basement
+* BsmtFinType1: NA means No basement
+* BsmtFinType2 : NA means No basement
+* BsmtExposure : NA means No basement
+* BsmtFinType1 : NA means No basement
+* BsmtFinType2 : NA means No basement
+* FireplaceQu : NA means No fireplace
+* GarageType : NA means No garage
+* GarageFinish : NA means No garage
+* GarageQual : NA means No garage
+* GarageCond : NA means No garage
+* PoolQC : NA means No pool
+* Fence : NA means No fence
+* MiscFeature : NA means None
+* MasVnrType: NA means None
+* Electrical: Mode fill
+* KitchenQual: Mode fill
+* MSZoning,SaleType: Mode fill 
+* Exterior1st: Mode fill 
+* Exterior2nd: Mode fill
+* GarageYrBlt: Replacing missing data with 0 (Since No garage = no cars in such garage.)
+* GarageArea and: Replacing missing data with 0 (Since No garage = no cars in such garage.) 
+* GarageCars : Replacing missing data with 0 (Since No garage = no cars in such garage.)
+* MasVnrArea: NA means 0
+* BsmtFinSF1: NA means 0
+* BsmtFinSF2: NA means 0
+* BsmtUnfSF: NA means 0
+* TotalBsmtSF: NA means 0
+* BsmtFullBath: NA means 0
+* BsmtHalfBath: NA means 0
+* Functional : NA means typical
+* LotFrontage : Group by neighborhood and fill in missing value by the median LotFrontage of all the neighborhood
+* LGarageYrBlt :  All garages that do not have a Year Built, does not exist (has 0 size in cars), so we will fill nulls with 0
+
+##### Dimension Reduction
+In statistics, multicollinearity (also collinearity) is a phenomenon in which one predictor variable in a multiple regression model can be linearly predicted from the others with a substantial degree of accuracy. In this situation the coefficient estimates of the multiple regression may change erratically in response to small changes in the model or the data. Multicollinearity does not reduce the predictive power or reliability of the model as a whole, at least within the sample data set; it only affects calculations regarding individual predictors. That is, a multivariate regression model with collinear predictors can indicate how well the entire bundle of predictors predicts the outcome variable, but it may not give valid results about any individual predictor, or about which predictors are redundant with respect to others.
+Knowing that, we decided to remove variables that have a correlation with other variable of the model greater than 0.8 or -0.8. This is because we want a good model but we also want to be able to explain how each variable is contributing to the target prediction. 
+For all pairs of multicolinear variables, we kept the one with a bigger correlation with the target variable.
+The variables that were removed in this step are:
+
+ - 'GarageArea',
+ - 'GarageYrBlt',
+ - 'TotRmsAbvGrd',
+ - '1stFlrSF'
+
+Other problem that can happen is with categorical variables. Sometimes the categorical variables have only 1 category, or have 2 categories with more than 99% of the concentration on one of te categories. These kinds of variables have no predictive power, and because of this they will be removed:
+
+ - 'Utilities'
+ - 'Street'
+ - 'Condition2'
+ - 'PoolQC'
+##### LabelEncoder
+We could have used one-hot-encoding on categorical variables, but as we are going to use tree-based models, we decided to go with Label encoding to keep the dimension of the dataset smaller and accelerate the trainning time. As all categorical variables were encoded, they will not be listed here. 
 
 ### Implementation
 In this section, the process for which metrics, algorithms, and techniques that you implemented for the given data will need to be clearly documented. It should be abundantly clear how the implementation was carried out, and discussion should be made regarding any complications that occurred during this process. Questions to ask yourself when writing this section:
