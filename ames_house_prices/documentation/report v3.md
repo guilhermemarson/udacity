@@ -212,62 +212,63 @@ Other problem that can happen is with categorical variables. Sometimes the categ
  - 'PoolQC'
 ##### LabelEncoder
 We could have used one-hot-encoding on categorical variables, but as we are going to use tree-based models, we decided to go with Label encoding to keep the dimension of the dataset smaller and accelerate the trainning time. As all categorical variables were encoded, they will not be listed here. 
+All preprocessing steps can be found on data_pipeline.ipynb file
 
 ### Implementation
-In this section, the process for which metrics, algorithms, and techniques that you implemented for the given data will need to be clearly documented. It should be abundantly clear how the implementation was carried out, and discussion should be made regarding any complications that occurred during this process. Questions to ask yourself when writing this section:
-- _Is it made clear how the algorithms and techniques were implemented with the given datasets or input data?_
-- _Were there any complications with the original metrics or techniques that required changing prior to acquiring a solution?_
-- _Was there any part of the coding process (e.g., writing complicated functions) that should be documented?_
+The main model implemented was a random forest. The algorithm is part of scikit-learn python package, which is a machine learning open sorce package. 
+As the datasets were ready to use because all the steps that were performed on the previews phases, the only data manipulations needed prior to trainning the model were to drop the ID column and separate the target variable (SalePrice) from the predictors.
+Following the same steps a gradient boosting model was implemented too.
+To select the third model I didn´t pick a specific algorithm. Instead I chose to use an automated machine learning package called TPOT. This package test lots of models trying to optimize the metric chosen. The best  model that was created by TPOT  was a Xtreme Gradient Boosting.
+One interesting point here is that TPOT does not accept RMSE (root mean squared error) as a metric to optimize, but it accepts NMSE (negative mean squared error), so to keep the model results comparable, I trained and refined all the models using NMSE, but validated the results of the three models with RMSE, using Kaggle´s submission system as proposed.
 
 ### Refinement
-The refinement of the model was done via Hyperparameter tunning using  **RandomizedSearchCV**, as explained above. As the result with a random forest model was not so good, a Gradient Boosting was also implemented, following the same steps. The results were much better, but the last step of the refinement was to try TPOT to find a better model. TPOT created a much more complex ensemble, composed by a Cross-validated Lasso, using the LARS algorithm, then a Elastic Net model with iterative fitting along a regularization path, then a Gradient Boosting Regressor.
+The refinement of the model via Hyperparameter tunning was done  using  **RandomizedSearchCV**, which tries a fixed number of parameter settings sampled from the specified distributions passed to the function. 
+A dictionary was created with some of the Random Forest and Gradient Boosting models hyperparameters and this dictionary was passed to the RandomizedSearchCV function to sample and test the possibilities. 
+TPOT does this part automatically . 
+
 ## IV. Results
-_(approx. 2-3 pages)_
 
 ### Model Evaluation and Validation
-In this section, the final model and any supporting qualities should be evaluated in detail. It should be clear how the final model was derived and why this model was chosen. In addition, some type of analysis should be used to validate the robustness of this model and its solution, such as manipulating the input data or environment to see how the model’s solution is affected (this is called sensitivity analysis). Questions to ask yourself when writing this section:
-- _Is the final model reasonable and aligning with solution expectations? Are the final parameters of the model appropriate?_
-- _Has the final model been tested with various inputs to evaluate whether the model generalizes well to unseen data?_
-- _Is the model robust enough for the problem? Do small perturbations (changes) in training data or the input space greatly affect the results?_
-- _Can results found from the model be trusted?_
+All three models were trainned using k-fold cross validation, so, in theory, they generalized very well to unseen data and it was making sense because the better, the cross validation score during trainning, the better the test score on Kaggle. 
+I started to doubt when I plotted real sale price vs predicted sale price for the first 100 observations. Although predicting observations that we used to train the model can return results better than predicting out of sample results, my objective was to verify if something was wrong:
+![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/overfit.png)
+ That was an almost perfect model or an overfitted one. To continue my investigation, I calculated the r2 score for all observations, because an r2 of 1 means a perfect (overfitted in most cases) model. The result was: 0.9999996
+ To better visualize how close the predictions were, I plotted the differences between the real sale price and the predicted one for all observations: 
+![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/overfitted_error.png)
+ The mean sale price of the houses is almost 200.000 dollars and the error was  between -200 and 200 dollars for almost all observations . All those points were more than enough to convince me of the overfit.
+ To overcome this problem I decided to split the dataset between train and test to garantee generalization. The train part of the dataframe was trainned in the same way, including k-fold cross validation, but the model was validated predicting the sale price on the test (out of sample) dataframe: 
+ ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/prediction_validation.png)
+ And below is the error plot:
+ ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/error_validation.png)
+Now I have a good model that can generalize and predict prices with error ranging from -50.000 to +50.000 on a sample of observations that were not used to train the model. 
 
 ### Justification
-In this section, your model’s final solution and its results should be compared to the benchmark you established earlier in the project using some type of statistical analysis. You should also justify whether these results and the solution are significant enough to have solved the problem posed in the project. Questions to ask yourself when writing this section:
-- _Are the final results found stronger than the benchmark result reported earlier?_
-- _Have you thoroughly analyzed and discussed the final solution?_
-- _Is the final solution significant enough to have solved the problem?_
-
+The last model brought the security that I was persuing. It performed very well using negative means squared error and r2. It also proved that it could generalize well, as demonstrated above.
+The last step that was needed in order to prove that this was the best model, was to submit the predictions to Kaggle, and it proved to be the best, because it ranked 45 positions better than my TPOT model submission, that was my best submission until this moment.
 
 ## V. Conclusion
-_(approx. 1-2 pages)_
+
 
 ### Free-Form Visualization
+
 In this section, you will need to provide some form of visualization that emphasizes an important quality about the project. It is much more free-form, but should reasonably support a significant result or characteristic about the problem that you want to discuss. Questions to ask yourself when writing this section:
 - _Have you visualized a relevant or important quality about the problem, dataset, input data, or results?_
 - _Is the visualization thoroughly analyzed and discussed?_
 - _If a plot is provided, are the axes, title, and datum clearly defined?_
 
 ### Reflection
-In this section, you will summarize the entire end-to-end problem solution and discuss one or two particular aspects of the project you found interesting or difficult. You are expected to reflect on the project as a whole to show that you have a firm understanding of the entire process employed in your work. Questions to ask yourself when writing this section:
-- _Have you thoroughly summarized the entire process you used for this project?_
-- _Were there any interesting aspects of the project?_
-- _Were there any difficult aspects of the project?_
-- _Does the final model and solution fit your expectations for the problem, and should it be used in a general setting to solve these types of problems?_
+The first big challenge on this project was to decide which dataset and problem to try to solve. There are lots of possibilities, but I tried to find one that I had some prior knowledge.
+After deciding the dataset and problem, the next big challenge was to understand all the variables. The dataset has a considerable number of variables and each one was explored and analyzed. This part took a lot of time and effort.
+The last challenge was to prove that the model was overfitted, prove and eliminate the problem. All the steps taken to overcome this were covered on the previous section. 
 
 ### Improvement
-In this section, you will need to provide discussion as to how one aspect of the implementation you designed could be improved. As an example, consider ways your implementation can be made more general, and what would need to be modified. You do not need to make this improvement, but the potential solutions resulting from these changes are considered and compared/contrasted to your current solution. Questions to ask yourself when writing this section:
-- _Are there further improvements that could be made on the algorithms or techniques you used in this project?_
-- _Were there algorithms or techniques you researched that you did not know how to implement, but would consider using if you knew how?_
-- _If you used your final solution as the new benchmark, do you think an even better solution exists?_
+There is a clear improvement to be done on the pre-processing step. I could have used one-hot-encoding on the categorical variables instead of label encoding because it would open space to non-tree models. 
+One other improvement that could have been done was to transform skewed numerical variables to make them closer to normal. 
+With these 2 improvements I think I would reached better results
 
------------
+### References
+https://en.wikipedia.org/wiki/Cross-validation_(statistics)
+https://en.wikipedia.org/wiki/Random_forest
+http://blog.citizennet.com/blog/2012/11/10/random-forests-ensembles-and-performance-metrics
+https://medium.com/@williamkoehrsen/random-forest-simple-explanation-377895a60d2d
 
-**Before submitting, ask yourself. . .**
-
-- Does the project report you’ve written follow a well-organized structure similar to that of the project template?
-- Is each section (particularly **Analysis** and **Methodology**) written in a clear, concise and specific fashion? Are there any ambiguous terms or phrases that need clarification?
-- Would the intended audience of your project be able to understand your analysis, methods, and results?
-- Have you properly proof-read your project report to assure there are minimal grammatical and spelling mistakes?
-- Are all the resources used for this project correctly cited and referenced?
-- Is the code that implements your solution easily readable and properly commented?
-- Does the code execute without error and produce results similar to those reported?
