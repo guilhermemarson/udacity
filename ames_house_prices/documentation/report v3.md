@@ -52,8 +52,11 @@ For a more detailed description on the variables, there is a file named variable
 #### Target Analysis
 The target is a continuous variable, so the first step is to analyze its distribution:
 ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/skewed_target_distribution.png)
+
 As we can see, the distribution is right skewed. To illustrate a bit more, we will also analyze the Probability plot:
+
 ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/skewed_target_probability_plot.png)
+
 Usually predictive models work better on normally distributed targets. A log transformation on right skewed targets tends to be sufficient to normalyze it. Although we have already validated that there is no SalePrice that is 0 or negative, as a good practice we will use the ln(x+1) transformation.
 Below we can see the target´s distribution and probability plots after the log transformation: 
 ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/normalized_target.png)
