@@ -65,15 +65,21 @@ Below we can see the target´s distribution and probability plots after the log 
 As we can see above, after the transformation the target is almost normal, so we will keep the log transformation on target and continue analysing the rest of the variables.
 #### Numerical Variable Analysis
 The first analysis on numerical variables is the Correlation Matrix, which brings the correlation between all numerical variables. We are going to use only the train dataset here because we want to take a closer look at how the variables correlates with the target (SalePrice)
+
 ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/correlation_matrix.png)
+
 Although we have some interesting correlations that needs to be investigated deeper, we will firstly focus on the variables that are highly correlated with SalesPrice.
 * OverallQual
 * TotalBsmtSF
 * GrLivArea
 * GarageCars
+
 ![Correlation plot of variables that are highly correlated with the target](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/target_highly_correlated.png)
+
 Let's take a look at the scatter plots to have a better idea of the correlations between the variables and the target:
+
 ![Scatter plots](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/scatter_plots.png)
+
 **OverallQual:** This numerical variable will be transformed to an ordered categorical variable. But  it´s interesting to note that it has an almost linear correlation with the price
 **TotalBsmtSF** This variable has a positive relationship with price. There is an interesting outlier that is a building with a very big basement, but I will keep it
 **GrLivArea** and **GarageCars** are very correlated with the price as well with no outlier to be removed
@@ -94,7 +100,9 @@ Before advancing to categorical variables, let´s take a look at nulls
 The null analysis is a very important step on data analysis. In this part we will find out if we have some variables with such a high amount of nulls that they can´t even be used. In this step we will also define the rules for null imputation for all the variables. 
 Although the act of using test data to analyze data and create null imputation rules can be considered data leakage, it's a common practice in Kaggle competitions in order to achieve better results. In real world modelling it would not be used, but for this specific case we are going to use.
  The graph below shows bars with the number of no null observations per variable. Each bar represents the number of not null observartion for each variable (higher bars are better). We will present only the variables that have at least 1 null observation:
+ 
  ![Nulls per variable](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/nulls%20per%20variable.png)
+ 
 As we can see there is much work to be done on null imputation but the rules will be covered later on Data Preprocessing section. 
 
 #### Categorical Variables Analysis
@@ -103,24 +111,31 @@ Since the number of categorical variables is too high and all of the analysis is
 
 ##### Alley Analysis
 ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/Alley.png)
+
 It´s clear that houses with paved alley have higher prices
 ##### Central Air Analysis
 ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/CentralAir.png)
+
 The same can be said about houses with central air conditioning
 ##### Heating Quality Analysis 
 ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/HEatingQC.png)
+
 There is a clear relationship between Heating Quality and sale price. The higher the heating quality, the higher the sale price
 ##### Kitchen Quality
 ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/KitchenQual.png)
+
 The same can be said about the kitchen quality
 ##### General Zoning Classification of the house Analysis
 ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/MSZoning.png)
+
 Commercial have lower prices than others. Residential Low Density and fluvial have slightly higher prices
 ##### Neighborhood Analysis
 ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/Neighborhood.png)
+
 As expected some Neighborhoods have higher/lower prices
 ##### Utilities Analysis
 ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/Utilities.png)
+
 This categorical have a high concentration on only one category so it will be removed
 
 ### Algorithms and Techniques
@@ -237,14 +252,18 @@ TPOT does this part automatically .
 All three models were trainned using k-fold cross validation, so, in theory, they generalized very well to unseen data and it was making sense because the better, the cross validation score during trainning, the better the test score on Kaggle. 
 I started to doubt when I plotted real sale price vs predicted sale price for the first 100 observations. Although predicting observations that we used to train the model can return results better than predicting out of sample results, my objective was to verify if something was wrong:
 ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/overfit.png)
+
  That was an almost perfect model or an overfitted one. To continue my investigation, I calculated the r2 score for all observations, because an r2 of 1 means a perfect (overfitted in most cases) model. The result was: 0.9999996
  To better visualize how close the predictions were, I plotted the differences between the real sale price and the predicted one for all observations: 
 ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/overfitted_error.png)
+
  The mean sale price of the houses is almost 200.000 dollars and the error was  between -200 and 200 dollars for almost all observations . All those points were more than enough to convince me of the overfit.
  To overcome this problem I decided to split the dataset between train and test to garantee generalization. The train part of the dataframe was trainned in the same way, including k-fold cross validation, but the model was validated predicting the sale price on the test (out of sample) dataframe: 
  ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/prediction_validation.png)
+ 
  And below is the error plot:
  ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/error_validation.png)
+ 
 Now I have a good model that can generalize and predict prices with error ranging from -50.000 to +50.000 on a sample of observations that were not used to train the model. 
 
 ### Justification
@@ -257,6 +276,7 @@ The last step that was needed in order to prove that this was the best model, wa
 ### Free-Form Visualization
 A good form to analyze if the model is solving the problem in an easy to understand way is to look at the real sale price of a house and compare it with the error of the predicted price. To be a bit more clear, the error is the difference between the real sale price and the predicted sale price. In the graph below we are going to compare the real sale price of the house with the prediction error. For this specific graph, we will use the absolute value of the error, because we want to see the how big the error is, compared to the sale price:
  ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/absolute_error.png)
+ 
 As we can see, for the first 100 rows, the error is very small compared to the sell price of the houses with some few exceptions, but to have a better idea, the graph below will show us the proportion between the error and the sale price:
 
 ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/proportional_error.png)
