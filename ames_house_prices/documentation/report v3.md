@@ -5,16 +5,16 @@ Guilherme Augusto Kater Marson
 September 26st, 2018
 
 ## I. Definition
-This project will define a model to better evaluate the sell price of houses in Ames, Iowa. The data can be found [here](https://www.kaggle.com/c/house-prices-advanced-regression-techniques/data). It’s important to mention that this dataset is part of a Kaggle competition, so it will be simple to compare the model performance to other model’s performance.  
+This project will define a model to better evaluate the sell price of houses in Ames, Iowa. The data can be found [here](https://www.kaggle.com/c/house-prices-advanced-regression-techniques/data). Itâ€™s important to mention that this dataset is part of a Kaggle competition, so it will be simple to compare the model performance to other modelâ€™s performance.  
 
 ### Project Overview
-There are three values for any home on the market: What the seller thinks it’s worth, what the buyer thinks it’s worth and what a professional appraiser will think it’s worth. The seller wants as much money as possible for his house. The buyer wants to pay as low as possible and the professional appraiser will gather some data from the house, together with his background experience to come with a price. 
-Seller and buyer usually trust the professional appraiser, but how accurate is his price? What if he has personal interest in completing this deal? Does he have all the data and knowledge to accurately evaluate that specific house? And the last point: isn’t he biased?
+There are three values for any home on the market: What the seller thinks itâ€™s worth, what the buyer thinks itâ€™s worth and what a professional appraiser will think itâ€™s worth. The seller wants as much money as possible for his house. The buyer wants to pay as low as possible and the professional appraiser will gather some data from the house, together with his background experience to come with a price. 
+Seller and buyer usually trust the professional appraiser, but how accurate is his price? What if he has personal interest in completing this deal? Does he have all the data and knowledge to accurately evaluate that specific house? And the last point: isnâ€™t he biased?
 
 
 ### Problem Statement
 There are some ways to evaluate houses but the most used is the sales comparison method, that compares the house to be sold with similar properties in the same locality.
-With this in mind and assuming that there is a database with explanatory variables describing (almost) every aspect of residential homes in Ames, Iowa, it’s possible to create a model to accurately evaluate house’s price. 
+With this in mind and assuming that there is a database with explanatory variables describing (almost) every aspect of residential homes in Ames, Iowa, itâ€™s possible to create a model to accurately evaluate houseâ€™s price. 
 The model will try to regress the explanatory variables to the fairest price possible, removing from the equation the integrity and knowledge of the professional appraiser. 
 
 ### Metrics
@@ -44,7 +44,7 @@ For a more detailed description on the variables, there is a file named variable
 
  - Name: the name of the variable
  - Type: numerical or categorical (textual)
- - Convert to Categorical: If it´s a good idea to convert the numerical to a categorical variable
+ - Convert to Categorical: If itÂ´s a good idea to convert the numerical to a categorical variable
  - Description: detailed description about the variable
  - Expectation: my personal expectation about the variable. It will be used to guide the data exploration priorization
 
@@ -55,7 +55,7 @@ The target is a continuous variable, so the first step is to analyze its distrib
 As we can see, the distribution is right skewed. To illustrate a bit more, we will also analyze the Probability plot:
 ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/skewed_target_probability_plot.png)
 Usually predictive models work better on normally distributed targets. A log transformation on right skewed targets tends to be sufficient to normalyze it. Although we have already validated that there is no SalePrice that is 0 or negative, as a good practice we will use the ln(x+1) transformation.
-Below we can see the target´s distribution and probability plots after the log transformation: 
+Below we can see the targetÂ´s distribution and probability plots after the log transformation: 
 ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/normalized_target.png)
 As we can see above, after the transformation the target is almost normal, so we will keep the log transformation on target and continue analysing the rest of the variables.
 #### Numerical Variable Analysis
@@ -69,11 +69,11 @@ Although we have some interesting correlations that needs to be investigated dee
 ![Correlation plot of variables that are highly correlated with the target](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/target_highly_correlated.png)
 Let's take a look at the scatter plots to have a better idea of the correlations between the variables and the target:
 ![Scatter plots](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/scatter_plots.png)
-**OverallQual:** This numerical variable will be transformed to an ordered categorical variable. But  it´s interesting to note that it has an almost linear correlation with the price
+**OverallQual:** This numerical variable will be transformed to an ordered categorical variable. But  itÂ´s interesting to note that it has an almost linear correlation with the price
 **TotalBsmtSF** This variable has a positive relationship with price. There is an interesting outlier that is a building with a very big basement, but I will keep it
 **GrLivArea** and **GarageCars** are very correlated with the price as well with no outlier to be removed
 
-From the above, only OverallQual and GarageCars are in my list of High Importance vars on "variable_description.xlsx" file. It´s important to mention that I ranked the variables in the spreadsheet prior to analysing the data, so it's only a personal feeling on the variable importance.
+From the above, only OverallQual and GarageCars are in my list of High Importance vars on "variable_description.xlsx" file. ItÂ´s important to mention that I ranked the variables in the spreadsheet prior to analysing the data, so it's only a personal feeling on the variable importance.
 The next step is to analyze variables that are highly correlated with itselves, not necessarily with the target. To avoid multicolinearity, the most correlated with the target will be kept and the other one will be dropped:
  - GarageArea Vs GarageCars
 	 - GarageArea dropped
@@ -84,21 +84,21 @@ The next step is to analyze variables that are highly correlated with itselves, 
  - 1stFlrSF Vs TotalBsmtSF
 	 - 1stFlrSF dropped
 
-Before advancing to categorical variables, let´s take a look at nulls
+Before advancing to categorical variables, letÂ´s take a look at nulls
 #### Null Variable Analysis
-The null analysis is a very important step on data analysis. In this part we will find out if we have some variables with such a high amount of nulls that they can´t even be used. In this step we will also define the rules for null imputation for all the variables. 
+The null analysis is a very important step on data analysis. In this part we will find out if we have some variables with such a high amount of nulls that they canÂ´t even be used. In this step we will also define the rules for null imputation for all the variables. 
 Although the act of using test data to analyze data and create null imputation rules can be considered data leakage, it's a common practice in Kaggle competitions in order to achieve better results. In real world modelling it would not be used, but for this specific case we are going to use.
  The graph below shows bars with the number of no null observations per variable. Each bar represents the number of not null observartion for each variable (higher bars are better). We will present only the variables that have at least 1 null observation:
  ![Nulls per variable](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/nulls%20per%20variable.png)
 As we can see there is much work to be done on null imputation but the rules will be covered later on Data Preprocessing section. 
 
 #### Categorical Variables Analysis
-The objective of the catagorical variable analysis is to identify variables that can explain the target. Also, it´s very important to identify if the data is not concentrated on only one category or if the categorical has only one category. 
+The objective of the catagorical variable analysis is to identify variables that can explain the target. Also, itÂ´s very important to identify if the data is not concentrated on only one category or if the categorical has only one category. 
 Since the number of categorical variables is too high and all of the analysis is in the data_exploration.ypnb file, we will cover only the some findings about the categorical variables in this section:
 
 ##### Alley Analysis
 ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/Alley.png)
-It´s clear that houses with paved alley have higher prices
+ItÂ´s clear that houses with paved alley have higher prices
 ##### Central Air Analysis
 ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/CentralAir.png)
 The same can be said about houses with central air conditioning
@@ -119,7 +119,7 @@ As expected some Neighborhoods have higher/lower prices
 This categorical have a high concentration on only one category so it will be removed
 
 ### Algorithms and Techniques
-The selected model is a **Random Forest**, because althogh it´s not as robust as a Xtreme Gradient Boosting, it's very easy to understand and much more robust than a simple decision tree. A Random Forest starts with a decision tree which, in ensemble terms, corresponds to our weak learner. In a decision tree, an input is entered at the top and as it traverses down the tree the data gets bucketed into smaller and smaller sets.
+The selected model is a **Random Forest**, because althogh itÂ´s not as robust as a Xtreme Gradient Boosting, it's very easy to understand and much more robust than a simple decision tree. A Random Forest starts with a decision tree which, in ensemble terms, corresponds to our weak learner. In a decision tree, an input is entered at the top and as it traverses down the tree the data gets bucketed into smaller and smaller sets.
 The random forest takes this notion to the next level by combining trees in an ensemble. Thus, in ensemble terms, the trees are weak learners and the random forest is a strong learner.
 Here is how such a system is trained; for some number of trees  _T_:
 1.  Sample  _N_  cases at random with replacement to create a subset of the data
@@ -130,12 +130,12 @@ Here is how such a system is trained; for some number of trees  _T_:
 3. After the _T_ trees are trained the response is obtained by the mode of the classes (classification) or mean prediction (regression) of the individual trees. Random decision forests correct for decision trees' habit of overfitting to their training set
 
 To avoid overfitting, the model will be trainned using ***k*-fold cross-validation**
-Cross-validation is any of various similar model validation techniques for assessing how the results of a statistical analysis will generalize to an independent data set. In a prediction problem, a model is usually given a dataset of known data on which training is run (training dataset), and a dataset of unknown data (or first seen data) against which the model is tested (called the validation dataset or testing set). The goal of cross-validation is to test the model’s ability to predict new data that was not used in estimating it, in order to flag problems like overfitting or selection bias and to give an insight on how the model will generalize to an independent dataset .
+Cross-validation is any of various similar model validation techniques for assessing how the results of a statistical analysis will generalize to an independent data set. In a prediction problem, a model is usually given a dataset of known data on which training is run (training dataset), and a dataset of unknown data (or first seen data) against which the model is tested (called the validation dataset or testing set). The goal of cross-validation is to test the modelâ€™s ability to predict new data that was not used in estimating it, in order to flag problems like overfitting or selection bias and to give an insight on how the model will generalize to an independent dataset .
 
 In k-fold cross-validation, the original sample is randomly partitioned into k equal sized subsamples. Of the k subsamples, a single subsample is retained as the validation data for testing the model, and the remaining k - 1 subsamples are used as training data. The cross-validation process is then repeated k times, with each of the k subsamples used exactly once as the validation data. The k results can then be averaged to produce a single estimation. 
 
 One more important technique that will be used is the **RandomizedSearchCV**
-RandomizedSearchCV is a hyperparameter tunning technique that tries a fixed number of hyperparameter settings sampled from specified probability distributions. In contrast to GridSearchCV, not all parameter values are tried out, so it´s not so computationally expensive.
+RandomizedSearchCV is a hyperparameter tunning technique that tries a fixed number of hyperparameter settings sampled from specified probability distributions. In contrast to GridSearchCV, not all parameter values are tried out, so itÂ´s not so computationally expensive.
 
 ### Benchmark
 The random forest model will be  evaluated using Root Mean Squared Error against a Gradient Boosting Model and  against a TPOT generated model. All models will be evaluated using root mean squared error applied to the test database using Kaggle submission platform.
@@ -218,8 +218,8 @@ All preprocessing steps can be found on data_pipeline.ipynb file
 The main model implemented was a random forest. The algorithm is part of scikit-learn python package, which is a machine learning open sorce package. 
 As the datasets were ready to use because all the steps that were performed on the previews phases, the only data manipulations needed prior to trainning the model were to drop the ID column and separate the target variable (SalePrice) from the predictors.
 Following the same steps a gradient boosting model was implemented too.
-To select the third model I didn´t pick a specific algorithm. Instead I chose to use an automated machine learning package called TPOT. This package test lots of models trying to optimize the metric chosen. The best  model that was created by TPOT  was a Xtreme Gradient Boosting.
-One interesting point here is that TPOT does not accept RMSE (root mean squared error) as a metric to optimize, but it accepts NMSE (negative mean squared error), so to keep the model results comparable, I trained and refined all the models using NMSE, but validated the results of the three models with RMSE, using Kaggle´s submission system as proposed.
+To select the third model I didnÂ´t pick a specific algorithm. Instead I chose to use an automated machine learning package called TPOT. This package test lots of models trying to optimize the metric chosen. The best  model that was created by TPOT  was a Xtreme Gradient Boosting.
+One interesting point here is that TPOT does not accept RMSE (root mean squared error) as a metric to optimize, but it accepts NMSE (negative mean squared error), so to keep the model results comparable, I trained and refined all the models using NMSE, but validated the results of the three models with RMSE, using KaggleÂ´s submission system as proposed.
 
 ### Refinement
 The refinement of the model via Hyperparameter tunning was done  using  **RandomizedSearchCV**, which tries a fixed number of parameter settings sampled from the specified distributions passed to the function. 
@@ -250,11 +250,13 @@ The last step that was needed in order to prove that this was the best model, wa
 
 
 ### Free-Form Visualization
+A good form to analyze if the model is solving the problem in an easy to understand way is to look at the real sale price of a house and compare it with the error of the predicted price. To be a bit more clear, the error is the difference between the real sale price and the predicted sale price. In the graph below we are going to compare the real sale price of the house with the prediction error. For this specific graph, we will use the absolute value of the error, because we want to see the how big the error is, compared to the sale price:
+ ![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/absolute_error.png)
+As we can see, for the first 100 rows, the error is very small compared to the sell price of the houses with some few exceptions, but to have a better idea, the graph below will show us the proportion between the error and the sale price:
 
-In this section, you will need to provide some form of visualization that emphasizes an important quality about the project. It is much more free-form, but should reasonably support a significant result or characteristic about the problem that you want to discuss. Questions to ask yourself when writing this section:
-- _Have you visualized a relevant or important quality about the problem, dataset, input data, or results?_
-- _Is the visualization thoroughly analyzed and discussed?_
-- _If a plot is provided, are the axes, title, and datum clearly defined?_
+![enter image description here](https://raw.githubusercontent.com/guilhermemarson/udacity/master/ames_house_prices/documentation/img/proportional_error.png)
+
+With this visualization it's clear that we have some spikes, but most part of the predictions have a difference smaller than 10% when compared to the real sale price. This is something awesome because we can predict a price that is very close to the real one. Besides that, the spikes, can be specific cases that the seller got a very good price or had to sell it very fast, so he had to lower the price to accomplish that. 
 
 ### Reflection
 The first big challenge on this project was to decide which dataset and problem to try to solve. There are lots of possibilities, but I tried to find one that I had some prior knowledge.
