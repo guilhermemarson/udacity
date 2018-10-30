@@ -2,7 +2,7 @@
 # Machine Learning Engineer Nanodegree
 ## Capstone Project
 Guilherme Augusto Kater Marson  
-September 26st, 2018
+October 29st, 2018
 
 ## I. Definition
 This project will define a model to better evaluate the sell price of houses in Ames, Iowa. The data can be found [here](https://www.kaggle.com/c/house-prices-advanced-regression-techniques/data). It’s important to mention that this dataset is part of a Kaggle competition, so it will be simple to compare the model performance to other model’s performance.  
@@ -154,7 +154,8 @@ Cross-validation is any of various similar model validation techniques for asses
 
 In k-fold cross-validation, the original sample is randomly partitioned into k equal sized subsamples. Of the k subsamples, a single subsample is retained as the validation data for testing the model, and the remaining k - 1 subsamples are used as training data. The cross-validation process is then repeated k times, with each of the k subsamples used exactly once as the validation data. The k results can then be averaged to produce a single estimation. 
 
-One more important technique that will be used is the **RandomizedSearchCV**
+One more important technique that will be used is the **RandomizedSearchCV**:
+
 RandomizedSearchCV is a hyperparameter tunning technique that tries a fixed number of hyperparameter settings sampled from specified probability distributions. In contrast to GridSearchCV, not all parameter values are tried out, so it´s not so computationally expensive.
 
 ### Benchmark
@@ -162,7 +163,6 @@ The random forest model will be  evaluated using Root Mean Squared Error against
 
 
 ## III. Methodology
-_(approx. 3-5 pages)_
 
 ### Data Preprocessing
 ##### Scale Transformation
@@ -224,7 +224,7 @@ The variables that were removed in this step are:
  - 'TotRmsAbvGrd',
  - '1stFlrSF'
 
-Other problem that can happen is with categorical variables. Sometimes the categorical variables have only 1 category, or have 2 categories with more than 99% of the concentration on one of te categories. These kinds of variables have no predictive power, and because of this they will be removed:
+Other problem that can happen : sometimes the categorical variables have only 1 category, or have 2 categories with more than 99% of the concentration on one of te categories. These kinds of variables have no or almost no predictive power, and because of this they will be removed:
 
  - 'Utilities'
  - 'Street'
@@ -232,14 +232,14 @@ Other problem that can happen is with categorical variables. Sometimes the categ
  - 'PoolQC'
 ##### LabelEncoder
 We could have used one-hot-encoding on categorical variables, but as we are going to use tree-based models, we decided to go with Label encoding to keep the dimension of the dataset smaller and accelerate the trainning time. As all categorical variables were encoded, they will not be listed here. 
-All preprocessing steps can be found on data_pipeline.ipynb file
+All preprocessing steps can be found on data_pipeline.ipynb file.
 
 ### Implementation
 The main model implemented was a random forest. The algorithm is part of scikit-learn python package, which is a machine learning open sorce package. 
 As the datasets were ready to use because all the steps that were performed on the previews phases, the only data manipulations needed prior to trainning the model were to drop the ID column and separate the target variable (SalePrice) from the predictors.
 Following the same steps a gradient boosting model was implemented too.
-To select the third model I didn´t pick a specific algorithm. Instead I chose to use an automated machine learning package called TPOT. This package test lots of models trying to optimize the metric chosen. The best  model that was created by TPOT  was a Xtreme Gradient Boosting.
-One interesting point here is that TPOT does not accept RMSE (root mean squared error) as a metric to optimize, but it accepts NMSE (negative mean squared error), so to keep the model results comparable, I trained and refined all the models using NMSE, but validated the results of the three models with RMSE, using Kaggle´s submission system as proposed.
+To select the third model I didn´t pick a specific algorithm. Instead I chose to use an automated machine learning package called TPOT. This package test lots of models trying to optimize the metric chosen. The best  model that was created by TPOT  was a Gradient Boosting too.
+One interesting point here is that TPOT does not accept RMSE (root mean squared error) as a metric to optimize, but it accepts NMSE (negative mean squared error), so to keep the model results comparable, I trained and refined all the models using NMSE, but validated the results of the three models with RMSE, using Kaggle´s submission system, as proposed.
 
 ### Refinement
 The refinement of the model via Hyperparameter tunning was done  using  **RandomizedSearchCV**, which tries a fixed number of parameter settings sampled from the specified distributions passed to the function. 
