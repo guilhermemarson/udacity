@@ -19,7 +19,7 @@ This project will define a model to better evaluate the sell price of houses in 
 	 - proposal.pdf - project proposal
 	 - references.txt - project references
 	 - report.md - Final Project Report source
-	 - report.pdf - Final Project Report
+	 - **report.pdf** - Final Project Report
 	 - variable_description - description of all the variables used to create the model
 ## Libraries
  - pandas for data manipulation
