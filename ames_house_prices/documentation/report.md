@@ -298,4 +298,10 @@ https://en.wikipedia.org/wiki/Cross-validation_(statistics)
 https://en.wikipedia.org/wiki/Random_forest
 http://blog.citizennet.com/blog/2012/11/10/random-forests-ensembles-and-performance-metrics
 https://medium.com/@williamkoehrsen/random-forest-simple-explanation-377895a60d2d
+https://www.kaggle.com/c/house-prices-advanced-regression-techniques
+https://www.zillow.com/home-buying-guide/how-to-value-a-house/
+https://www.quora.com/How-can-I-estimate-or-evaluate-the-proper-value-of-a-propertyhousing-in-India
+https://en.wikipedia.org/wiki/Root-mean-square_deviation
+https://medium.com/human-in-a-machine-world/mae-and-rmse-which-metric-is-bettere60ac3bde13d
+https://stats.stackexchange.com/questions/221807/rmse-where-this-evaluation-metriccame-from
 
